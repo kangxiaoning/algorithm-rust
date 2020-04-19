@@ -64,3 +64,36 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr2);
     util::test_sort("insertion sort_v1", sort_v1, &mut arr1);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn integer() {
+        let mut res = vec![4, 1, 8, 5, 7];
+        sort_v1(&mut res);
+        assert_eq!(res, vec![1, 4, 5, 7, 8]);
+    }
+
+    #[test]
+    fn chars() {
+        let mut res = vec!['A', 'a', 'h', 'b', 'W'];
+        sort_v1(&mut res);
+        assert_eq!(res, vec!['A', 'W', 'a', 'b', 'h']);
+    }
+
+    #[test]
+    fn empty() {
+        let mut res = Vec::<u8>::new();
+        sort_v1(&mut res);
+        assert_eq!(res, vec![]);
+    }
+
+    #[test]
+    fn pre_sorted() {
+        let mut res = vec!['a', 'b', 'c', 'd'];
+        sort_v1(&mut res);
+        assert_eq!(res, vec!['a', 'b', 'c', 'd']);
+    }
+}
