@@ -65,3 +65,28 @@ where
     // 测试正确性
     assert_eq!(is_sorted(arr), true);
 }
+
+fn first_character_index(s: &str, start: usize) -> usize {
+    let mut i = start;
+    while i < s.len() {
+        if (s.as_bytes()[i] as char).is_alphabetic() {
+            return i;
+        }
+        i += 1;
+    }
+    return s.len();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_first_character_index() {
+        let s = String::from("  hello world");
+        assert_eq!(first_character_index(&s, 0), 2);
+        assert_eq!(first_character_index(&s, 7), 8);
+        let s = String::from("12345");
+        assert_eq!(first_character_index(&s, 0), 5);
+    }
+}
