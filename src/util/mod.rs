@@ -1,5 +1,9 @@
 use rand;
 use rand::Rng;
+use std::fs::File;
+use std::io::{self, BufRead, BufReader};
+use std::path::Path;
+use std::str;
 use std::time::Instant;
 
 // 生成随机数组
@@ -77,6 +81,39 @@ fn first_character_index(s: &str, start: usize) -> usize {
     return s.len();
 }
 
+pub fn read_file<P>(filename: P, words: &mut Vec<String>) -> Result<(), io::Error>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    let reader = BufReader::new(file);
+    let mut contents = String::new();
+
+    for line in reader.lines() {
+        contents.push_str(&line.unwrap());
+        contents.push('\n');
+    }
+
+    // 简单分词
+    let mut start = first_character_index(&contents, 0);
+    let mut i = start + 1;
+    while i <= contents.len() {
+        if i == contents.len() || !(contents.as_bytes()[i] as char).is_alphabetic() {
+            // 提取单词的逻辑，假设都是ASCII，转化成bytes再切片提取单词，再用from_utf8转换为string
+            // &str -> &[u8] -> string -> lowercase
+            let word = str::from_utf8(&contents.as_bytes()[start..i])
+                .unwrap()
+                .to_lowercase();
+            words.push(word);
+            start = first_character_index(&contents, i);
+            i = start + 1;
+        } else {
+            i += 1;
+        }
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,5 +125,12 @@ mod tests {
         assert_eq!(first_character_index(&s, 7), 8);
         let s = String::from("12345");
         assert_eq!(first_character_index(&s, 0), 5);
+    }
+
+    #[test]
+    fn test_read_file() {
+        let path = Path::new("./src/main.rs");
+        let mut words: Vec<String> = Vec::new();
+        assert_eq!(read_file(path, &mut words).unwrap(), ());
     }
 }
