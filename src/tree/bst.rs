@@ -137,7 +137,7 @@ pub fn run() {
                 None => println!("No word 'god' in {:?}", path),
             }
 
-            println!("BST, time:  {:>12}µs)", now.elapsed().as_micros());
+            println!("BST, time:  {:>12} µs", now.elapsed().as_micros());
         }
         Err(e) => println!("{}", e),
     }
