@@ -1,0 +1,35 @@
+Test for random array in 1-n .
+| selection sort       | n = 100      |          318 µs |
+| selection sort       | n = 1000     |        27352 µs |
+| selection sort       | n = 10000    |      2549941 µs |
+Test for random array in 1-n .
+| selection sort       | n = 100      |          266 µs |
+| insertion sort_v1    | n = 100      |          144 µs |
+| insertion sort_v2    | n = 100      |           89 µs |
+| selection sort       | n = 1000     |        25207 µs |
+| insertion sort_v1    | n = 1000     |        10686 µs |
+| insertion sort_v2    | n = 1000     |         5709 µs |
+| selection sort       | n = 10000    |      2534461 µs |
+| insertion sort_v1    | n = 10000    |      1060330 µs |
+| insertion sort_v2    | n = 10000    |       564241 µs |
+Test for nearly ordered array, swap_times = 10 .
+| selection sort       | n = 100      |          262 µs |
+| insertion sort_v1    | n = 100      |           37 µs |
+| insertion sort_v2    | n = 100      |           24 µs |
+| selection sort       | n = 1000     |        25229 µs |
+| insertion sort_v1    | n = 1000     |          389 µs |
+| insertion sort_v2    | n = 1000     |          244 µs |
+| selection sort       | n = 10000    |      2511120 µs |
+| insertion sort_v1    | n = 10000    |         4094 µs |
+| insertion sort_v2    | n = 10000    |         2563 µs |
+size: 2
+is empty: false
+contains 'a': true
+contains 'c': false
+search 'a': Some(1)
+search 'c': None
+search a: Some(1)
+k = a
+There are totally 431180 words in "./src/files/bible.txt"
+'god': 2301
+BST, time:        801283µs)
