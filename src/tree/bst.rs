@@ -1,5 +1,8 @@
+use crate::util;
 use std::cmp::Ordering;
 use std::mem;
+use std::path::Path;
+use std::time::Instant;
 
 type Tree<K, V> = Option<Box<Node<K, V>>>;
 
@@ -54,7 +57,7 @@ impl<K: Ord, V: Clone> BST<K, V> {
                 match k.cmp(&d.key) {
                     Ordering::Less => d.left = self.insert_node(d.left, k, v),
                     Ordering::Greater => d.right = self.insert_node(d.right, k, v),
-                    Ordering::Equal => (),
+                    Ordering::Equal => d.value = v,
                 }
                 Some(d)
             }
@@ -62,11 +65,11 @@ impl<K: Ord, V: Clone> BST<K, V> {
         }
     }
 
-    pub fn contains(&self, k: K) -> bool {
+    pub fn contains(&self, k: &K) -> bool {
         self.contains_node(&self.root, k)
     }
 
-    fn contains_node(&self, node: &Tree<K, V>, k: K) -> bool {
+    fn contains_node(&self, node: &Tree<K, V>, k: &K) -> bool {
         match node {
             Some(d) => match k.cmp(&d.key) {
                 Ordering::Less => self.contains_node(&d.left, k),
@@ -77,11 +80,11 @@ impl<K: Ord, V: Clone> BST<K, V> {
         }
     }
 
-    pub fn search(&self, k: K) -> Option<V> {
+    pub fn search(&self, k: &K) -> Option<V> {
         self.search_node(&self.root, k)
     }
 
-    fn search_node(&self, node: &Tree<K, V>, k: K) -> Option<V> {
+    fn search_node(&self, node: &Tree<K, V>, k: &K) -> Option<V> {
         match node {
             Some(d) => match k.cmp(&d.key) {
                 Ordering::Less => self.search_node(&d.left, k),
@@ -97,12 +100,47 @@ pub fn run() {
     let mut bst: BST<&str, u64> = BST::new();
     bst.insert("a", 1);
     bst.insert("b", 2);
+    let k = "a";
     println!("size: {}", bst.size());
     println!("is empty: {}", bst.is_empty());
-    println!("contains 'a': {}", bst.contains("a"));
-    println!("contains 'c': {}", bst.contains("c"));
-    println!("search 'a': {:?}", bst.search("a"));
-    println!("search 'c': {:?}", bst.search("c"));
+    println!("contains 'a': {}", bst.contains(&"a"));
+    println!("contains 'c': {}", bst.contains(&"c"));
+    println!("search 'a': {:?}", bst.search(&"a"));
+    println!("search 'c': {:?}", bst.search(&"c"));
+    println!("search {}: {:?}", k, bst.search(&k));
+    println!("k = {}", k);
+
+    // 测试圣经词频
+    let path = Path::new("./src/files/bible.txt");
+    let mut words: Vec<String> = Vec::new();
+    match util::read_file(path, &mut words) {
+        Ok(_) => {
+            println!("There are totally {} words in {:?}", words.len(), path);
+
+            let now = Instant::now();
+            let mut bst: BST<String, u32> = BST::new();
+            for word in words.iter() {
+                // bst.search(word) -> Option<&V>
+                match bst.search(word) {
+                    Some(v) => {
+                        // TODO: modify v in place
+                        bst.insert(word.to_string(), v + 1);
+                    }
+                    None => {
+                        bst.insert(word.to_string(), 1);
+                    }
+                }
+            }
+
+            match bst.search(&"god".to_string()) {
+                Some(v) => println!("'god': {}", v),
+                None => println!("No word 'god' in {:?}", path),
+            }
+
+            println!("BST, time:  {:>12}µs)", now.elapsed().as_micros());
+        }
+        Err(e) => println!("{}", e),
+    }
 }
 
 #[cfg(test)]
@@ -135,15 +173,15 @@ mod tests {
     fn contains() {
         let mut bst = BST::new();
         bst.insert("a", 1);
-        assert_eq!(bst.contains("a"), true);
-        assert_eq!(bst.contains("b"), false);
+        assert_eq!(bst.contains(&"a"), true);
+        assert_eq!(bst.contains(&"b"), false);
     }
 
     #[test]
     fn search() {
         let mut bst = BST::new();
         bst.insert("a", 1);
-        assert_eq!(bst.search("a"), Some(1));
-        assert_eq!(bst.search("b"), None);
+        assert_eq!(bst.search(&"a"), Some(1));
+        assert_eq!(bst.search(&"b"), None);
     }
 }
