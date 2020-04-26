@@ -1,19 +1,23 @@
 use crate::util;
+use rand;
+use rand::Rng;
 use std::cmp::Ordering;
+use std::fmt::Debug;
 use std::mem;
 use std::path::Path;
 use std::time::Instant;
 
 type Tree<K, V> = Option<Box<Node<K, V>>>;
 
-struct Node<K: Ord, V: Clone> {
+#[derive(Debug)]
+struct Node<K: Ord + Debug, V: Clone> {
     key: K,
     value: V,
     left: Tree<K, V>,
     right: Tree<K, V>,
 }
 
-impl<K: Ord, V: Clone> Node<K, V> {
+impl<K: Ord + Debug, V: Clone> Node<K, V> {
     pub fn new(k: K, v: V) -> Tree<K, V> {
         Some(Box::new(Node {
             key: k,
@@ -24,12 +28,12 @@ impl<K: Ord, V: Clone> Node<K, V> {
     }
 }
 
-pub struct BST<K: Ord, V: Clone> {
+pub struct BST<K: Ord + Debug, V: Clone> {
     root: Tree<K, V>,
     pub count: u64,
 }
 
-impl<K: Ord, V: Clone> BST<K, V> {
+impl<K: Ord + Debug, V: Clone> BST<K, V> {
     pub fn new() -> Self {
         BST {
             root: None,
@@ -94,6 +98,54 @@ impl<K: Ord, V: Clone> BST<K, V> {
             None => None,
         }
     }
+
+    // 前序遍历，递归算法
+    pub fn pre_order(&self) {
+        self.pre_order_recursion(&self.root);
+    }
+
+    fn pre_order_recursion(&self, node: &Tree<K, V>) {
+        match node {
+            Some(d) => {
+                println!("{:?}", d.key);
+                self.pre_order_recursion(&d.left);
+                self.pre_order_recursion(&d.right);
+            }
+            None => return,
+        }
+    }
+
+    // 中序遍历，递归算法
+    pub fn in_order(&self) {
+        self.in_order_recursion(&self.root);
+    }
+
+    fn in_order_recursion(&self, node: &Tree<K, V>) {
+        match node {
+            Some(d) => {
+                self.in_order_recursion(&d.left);
+                println!("{:?}", d.key);
+                self.in_order_recursion(&d.right);
+            }
+            None => return,
+        }
+    }
+
+    // 后序遍历，递归算法
+    pub fn post_order(&self) {
+        self.post_order_recursion(&self.root);
+    }
+
+    fn post_order_recursion(&self, node: &Tree<K, V>) {
+        match node {
+            Some(d) => {
+                self.post_order_recursion(&d.left);
+                self.post_order_recursion(&d.right);
+                println!("{:?}", d.key);
+            }
+            None => return,
+        }
+    }
 }
 
 pub fn run() {
@@ -141,6 +193,27 @@ pub fn run() {
         }
         Err(e) => println!("{}", e),
     }
+
+    // 测试前序遍历
+    let mut bst: BST<usize, usize> = BST::new();
+    let mut rng = rand::thread_rng();
+    let n = 10;
+    let m = 100;
+    for _ in 0..=n {
+        let key = rng.gen_range(0, m) as usize;
+        let value = key.clone();
+        bst.insert(key, value);
+    }
+    println!("pre order:");
+    bst.pre_order();
+
+    // 测试前序遍历
+    println!("in order:");
+    bst.in_order();
+
+    // 测试后序遍历
+    println!("post order:");
+    bst.post_order();
 }
 
 #[cfg(test)]
