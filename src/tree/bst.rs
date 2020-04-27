@@ -2,6 +2,7 @@ use crate::util;
 use rand;
 use rand::Rng;
 use std::cmp::Ordering;
+use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::mem;
 use std::path::Path;
@@ -146,6 +147,32 @@ impl<K: Ord + Debug, V: Clone> BST<K, V> {
             None => return,
         }
     }
+
+    // 层序遍历
+    pub fn level_order(&self) {
+        if let None = self.root {
+            return;
+        }
+
+        let mut q: VecDeque<&Tree<K, V>> = VecDeque::new();
+        q.push_back(&self.root);
+
+        while !q.is_empty() {
+            let node = q.pop_front().unwrap();
+            // do something to the node
+            println!("{:?}", node.as_ref().unwrap().key);
+
+            match &node.as_ref().unwrap().left {
+                Some(_) => q.push_back(&node.as_ref().unwrap().left),
+                _ => (),
+            }
+
+            match &node.as_ref().unwrap().right {
+                Some(_) => q.push_back(&node.as_ref().unwrap().right),
+                _ => (),
+            }
+        }
+    }
 }
 
 pub fn run() {
@@ -214,6 +241,10 @@ pub fn run() {
     // 测试后序遍历
     println!("post order:");
     bst.post_order();
+
+    // 测试层序遍历
+    println!("level order:");
+    bst.level_order();
 }
 
 #[cfg(test)]
