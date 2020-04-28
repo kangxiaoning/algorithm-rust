@@ -162,14 +162,12 @@ impl<K: Ord + Debug, V: Clone> BST<K, V> {
             // do something to the node
             println!("{:?}", node.as_ref().unwrap().key);
 
-            match &node.as_ref().unwrap().left {
-                Some(_) => q.push_back(&node.as_ref().unwrap().left),
-                _ => (),
+            if let Some(_) = &node.as_ref().unwrap().left {
+                q.push_back(&node.as_ref().unwrap().left);
             }
 
-            match &node.as_ref().unwrap().right {
-                Some(_) => q.push_back(&node.as_ref().unwrap().right),
-                _ => (),
+            if let Some(_) = node.as_ref().unwrap().right {
+                q.push_back(&node.as_ref().unwrap().right);
             }
         }
     }
