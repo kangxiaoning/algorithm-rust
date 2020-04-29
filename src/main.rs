@@ -5,5 +5,6 @@ mod util;
 fn main() {
     sorting::selection::run();
     sorting::insertion::run();
+    sorting::bubble::run();
     tree::bst::run();
 }
