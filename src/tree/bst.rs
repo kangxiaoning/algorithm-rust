@@ -11,7 +11,7 @@ use std::time::Instant;
 type Tree<K, V> = Option<Box<Node<K, V>>>;
 
 #[derive(Debug)]
-struct Node<K: Ord, V: Clone> {
+struct Node<K, V> {
     key: K,
     value: V,
     left: Tree<K, V>,
@@ -29,7 +29,7 @@ impl<K: Ord, V: Clone> Node<K, V> {
     }
 }
 
-pub struct BST<K: Ord, V: Clone> {
+pub struct BST<K, V> {
     root: Tree<K, V>,
     pub count: u64,
 }

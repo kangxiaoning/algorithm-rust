@@ -5,6 +5,10 @@ use crate::util;
 pub fn sort_v1<T: Ord>(arr: &mut [T]) {
     let len = arr.len();
 
+    if len == 0 {
+        return;
+    }
+
     for i in 0..len - 1 {
         for j in 0..len - 1 - i {
             if arr[j] > arr[j + 1] {
