@@ -31,7 +31,7 @@ fn merge<T: Ord + Copy>(arr: &mut [T], start: usize, mid: usize, end: usize) {
     // 分配辅助数组
     let mut aux = Vec::with_capacity(end - start + 1);
     for i in start..=end {
-        aux.insert(i, arr[i].clone());
+        aux.push(arr[i]);
     }
 
     let mut i = start;
@@ -71,7 +71,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 
     let n = 1000;
     let mut arr1 = util::generate_random_array(n, 1, n);
@@ -81,7 +81,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 
     let n = 10000;
     let mut arr1 = util::generate_random_array(n, 1, n);
@@ -91,7 +91,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 
     let swap_times = 10;
     println!(
@@ -107,7 +107,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 
     let n = 1000;
     let mut arr1 = util::generate_nearly_ordered_array(n, swap_times);
@@ -117,7 +117,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 
     let n = 10000;
     let mut arr1 = util::generate_nearly_ordered_array(n, swap_times);
@@ -127,7 +127,7 @@ pub fn run() {
     util::test_sort("selection sort", selection::sort, &mut arr1);
     util::test_sort("insertion sort_v1", insertion::sort_v1, &mut arr2);
     util::test_sort("insertion sort_v2", insertion::sort_v2, &mut arr3);
-    util::test_sort("merge sort_v1", insertion::sort_v1, &mut arr4);
+    util::test_sort("merge sort_v1", sort_v1, &mut arr4);
 }
 
 #[cfg(test)]
