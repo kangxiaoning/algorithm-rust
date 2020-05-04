@@ -4,6 +4,7 @@
 use std::borrow::Borrow;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
+use std::iter::FromIterator;
 use std::mem;
 
 const INITIAL_NBUCKETS: usize = 1;
@@ -238,6 +239,174 @@ impl<'a, K, V> IntoIterator for &'a HashMap<K, V> {
     }
 }
 
+pub struct IntoIter<K, V> {
+    map: HashMap<K, V>,
+    bucket: usize,
+}
+
+impl<K, V> Iterator for IntoIter<K, V> {
+    type Item = (K, V);
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            match self.map.buckets.get_mut(self.bucket) {
+                Some(bucket) => match bucket.pop() {
+                    Some(x) => break Some(x),
+                    None => {
+                        self.bucket += 1;
+                        continue;
+                    }
+                },
+                None => break None,
+            }
+        }
+    }
+}
+
+impl<K, V> IntoIterator for HashMap<K, V> {
+    type Item = (K, V);
+    type IntoIter = IntoIter<K, V>;
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter {
+            map: self,
+            bucket: 0,
+        }
+    }
+}
+
+impl<K, V> FromIterator<(K, V)> for HashMap<K, V>
+where
+    K: Hash + Eq,
+{
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = (K, V)>,
+    {
+        let mut map = HashMap::new();
+        for (k, v) in iter {
+            map.insert(k, v);
+        }
+        map
+    }
+}
+
+// for example 3
+#[derive(Hash, Eq, PartialEq, Debug)]
+struct Viking {
+    name: String,
+    country: String,
+}
+
+impl Viking {
+    /// Creates a new Viking.
+    fn new(name: &str, country: &str) -> Viking {
+        Viking {
+            name: name.to_string(),
+            country: country.to_string(),
+        }
+    }
+}
+
+pub fn run() {
+    // emacple 1
+    // Type inference lets us omit an explicit type signature (which
+    // would be `HashMap<String, String>` in this example).
+    let mut book_reviews = HashMap::new();
+
+    // Review some books.
+    book_reviews.insert(
+        "Adventures of Huckleberry Finn".to_string(),
+        "My favorite book.".to_string(),
+    );
+    book_reviews.insert(
+        "Grimms' Fairy Tales".to_string(),
+        "Masterpiece.".to_string(),
+    );
+    book_reviews.insert(
+        "Pride and Prejudice".to_string(),
+        "Very enjoyable.".to_string(),
+    );
+    book_reviews.insert(
+        "The Adventures of Sherlock Holmes".to_string(),
+        "Eye lyked it alot.".to_string(),
+    );
+
+    // Check for a specific one.
+    // When collections store owned values (String), they can still be
+    // queried using references (&str).
+    if !book_reviews.contains_key(&"Les Misérables".to_string()) {
+        println!(
+            "We've got {} reviews, but Les Misérables ain't one.",
+            book_reviews.len()
+        );
+    }
+
+    // oops, this review has a lot of spelling mistakes, let's delete it.
+    book_reviews.remove(&"The Adventures of Sherlock Holmes".to_string());
+
+    // Look up the values associated with some keys.
+    let to_find = ["Pride and Prejudice", "Alice's Adventure in Wonderland"];
+    for &book in &to_find {
+        match book_reviews.get(&book.to_string()) {
+            Some(review) => println!("{}: {}", book, review),
+            None => println!("{} is unreviewed.", book),
+        }
+    }
+
+    // Look up the value for a key (will panic if the key is not found).
+    // println!("Review for Jane: {}", book_reviews["Pride and Prejudice"]);
+
+    // Iterate over everything.
+    for (book, review) in &book_reviews {
+        println!("{}: \"{}\"", book, review);
+    }
+
+    // example 2
+
+    // type inference lets us omit an explicit type signature (which
+    // would be `HashMap<&str, u8>` in this example).
+    let mut player_stats = HashMap::new();
+
+    fn random_stat_buff() -> u8 {
+        // could actually return some random value here - let's just return
+        // some fixed value for now
+        42
+    }
+
+    // insert a key only if it doesn't already exist
+    player_stats.entry("health").or_insert(100);
+
+    // insert a key using a function that provides a new value only if it
+    // doesn't already exist
+    player_stats
+        .entry("defence")
+        .or_insert_with(random_stat_buff);
+
+    // update a key, guarding against the key possibly not being set
+    let stat = player_stats.entry("attack").or_insert(100);
+    *stat += random_stat_buff();
+
+    // example 3
+
+    // Use a HashMap to store the vikings' health points.
+    let mut vikings = HashMap::new();
+
+    vikings.insert(Viking::new("Einar", "Norway"), 25);
+    vikings.insert(Viking::new("Olaf", "Denmark"), 24);
+    vikings.insert(Viking::new("Harald", "Iceland"), 12);
+
+    // Use derived implementation to print the status of the vikings.
+    for (viking, health) in &vikings {
+        println!("{:?} has {} hp", viking, health);
+    }
+
+    // example 4
+
+    let _timber_resources: HashMap<&str, i32> = [("Norway", 100), ("Denmark", 50), ("Iceland", 10)]
+        .iter()
+        .cloned()
+        .collect();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -275,5 +444,18 @@ mod tests {
         }
 
         assert_eq!((&map).into_iter().count(), 4);
+
+        let mut items = 0;
+        for (k, v) in map {
+            match k {
+                "abc" => assert_eq!(v, 111),
+                "def" => assert_eq!(v, 211),
+                "hij" => assert_eq!(v, 311),
+                "klm" => assert_eq!(v, 411),
+                _ => unimplemented!(),
+            }
+            items += 1;
+        }
+        assert_eq!(items, 4);
     }
 }
