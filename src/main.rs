@@ -9,4 +9,5 @@ fn main() {
     sorting::bubble::run();
     tree::bst::run();
     sorting::merge::run();
+    map::hashmap::run();
 }
