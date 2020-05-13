@@ -6,15 +6,18 @@ pub mod uf1 {
 
     impl UnionFind {
         pub fn new(n: usize) -> Self {
-            Self {
-                id: vec![0; n],
-                count: n,
+            // 初始化, 每一个id[i]指向自己, 表示每一个元素自己自成一个集合
+            let mut id = vec![0; n];
+            for i in 0..n {
+                id[i] = i;
             }
+
+            Self { id, count: n }
         }
 
         // 查找元素p所对应的集合编号
         pub fn find(&self, p: usize) -> usize {
-            assert!(p >= 0 && p < self.count);
+            assert!(p < self.count);
             self.id[p]
         }
 
