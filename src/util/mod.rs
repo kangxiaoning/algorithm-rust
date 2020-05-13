@@ -1,5 +1,6 @@
-use rand;
-use rand::Rng;
+pub mod sst;
+
+use rand::{self, Rng};
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use std::path::Path;

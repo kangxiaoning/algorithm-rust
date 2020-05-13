@@ -1,6 +1,7 @@
 mod map;
 mod sorting;
 mod tree;
+mod uf;
 mod util;
 
 fn main() {
@@ -10,4 +11,5 @@ fn main() {
     tree::bst::run();
     sorting::merge::run();
     map::hashmap::run();
+    uf::unionfind::run();
 }
