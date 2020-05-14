@@ -102,6 +102,72 @@ pub mod uf2 {
     }
 }
 
+// 第三版Union-Find
+pub mod uf3 {
+    pub struct UnionFind {
+        // parent[i]表示第i个元素所指向的父节点
+        parent: Vec<usize>,
+        // sz[i]表示以i为根的集合中元素个数
+        size: Vec<usize>,
+        count: usize,
+    }
+
+    impl UnionFind {
+        pub fn new(n: usize) -> Self {
+            let mut parent = vec![0; n];
+            let size = vec![1; n];
+            for i in 0..n {
+                parent[i] = i;
+            }
+
+            Self {
+                parent,
+                size,
+                count: n,
+            }
+        }
+
+        // 查找过程, 查找元素p所对应的集合编号
+        // O(h)复杂度, h为树的高度
+        pub fn find(&self, p: usize) -> usize {
+            assert!(p < self.count);
+            // 不断去查询自己的父亲节点, 直到到达根节点
+            // 根节点的特点: parent[p] == p
+            let mut p = p;
+            while p != self.parent[p] {
+                p = self.parent[p];
+            }
+            p
+        }
+
+        // 查看元素p和元素q是否所属一个集合
+        // O(h)复杂度, h为树的高度
+        pub fn is_connected(&self, p: usize, q: usize) -> bool {
+            self.find(p) == self.find(q)
+        }
+
+        // 合并元素p和元素q所属的集合
+        // O(h)复杂度, h为树的高度
+        pub fn union_elements(&mut self, p: usize, q: usize) {
+            let p_root = self.find(p);
+            let q_root = self.find(q);
+
+            if p_root == q_root {
+                return;
+            }
+            // 根据两个元素所在树的元素个数不同判断合并方向
+            // 将元素个数少的集合合并到元素个数多的集合上
+            if self.size[p_root] < self.size[q_root] {
+                self.parent[p_root] = q_root;
+                self.size[q_root] += self.size[p_root];
+            } else {
+                self.parent[q_root] = p_root;
+                self.size[p_root] += self.size[q_root];
+            }
+        }
+    }
+}
+
 pub mod union_find_test_helper {
     use rand::{self, Rng};
     use std::time::Instant;
@@ -153,11 +219,36 @@ pub mod union_find_test_helper {
         // 打印输出对这2n个操作的耗时
         println!("UF2, {} ops, {} µs", 2 * n, now.elapsed().as_micros());
     }
+
+    pub fn test_uf3(n: usize) {
+        let mut uf = super::uf3::UnionFind::new(n);
+        let mut rng = rand::thread_rng();
+
+        // 测试运行时间
+        let now = Instant::now();
+
+        // 进行n次操作，每次随机选择两个元素进行合并操作
+        for _ in 0..n {
+            let a = rng.gen_range(0, n);
+            let b = rng.gen_range(0, n);
+            uf.union_elements(a, b);
+        }
+
+        // 进行n次操作，每次随机选择两个元素，查询是否属于同一个集合
+        for _ in 0..n {
+            let a = rng.gen_range(0, n);
+            let b = rng.gen_range(0, n);
+            uf.is_connected(a, b);
+        }
+        // 打印输出对这2n个操作的耗时
+        println!("UF3, {} ops, {} µs", 2 * n, now.elapsed().as_micros());
+    }
 }
 
 pub fn run() {
-    let n = 10000;
+    let n = 100000;
 
-    union_find_test_helper::test_uf1(n);
+    // union_find_test_helper::test_uf1(n);
     union_find_test_helper::test_uf2(n);
+    union_find_test_helper::test_uf3(n);
 }
