@@ -73,12 +73,12 @@ pub mod uf2 {
             assert!(p < self.count);
             // 不断去查询自己的父亲节点, 直到到达根节点
             // 根节点的特点: parent[p] == p
-            let mut ret = p;
-            while ret != self.parent[p] {
-                ret = self.parent[p];
-                // println!("ret = {}", ret);
+            let mut p = p;
+            while p != self.parent[p] {
+                p = self.parent[p];
+                // println!("p = {}", p);
             }
-            ret
+            p
         }
 
         // 查看元素p和元素q是否所属一个集合
