@@ -271,12 +271,19 @@ pub mod uf5 {
             // 根节点的特点: parent[p] == p
 
             // path compression 1
-            let mut p = p;
-            while p != self.parent[p] {
-                self.parent[p] = self.parent[self.parent[p]];
-                p = self.parent[p];
+            // let mut p = p;
+            // while p != self.parent[p] {
+            //     self.parent[p] = self.parent[self.parent[p]];
+            //     p = self.parent[p];
+            // }
+            // p
+
+            // path compression 2
+            // recursion
+            if p != self.parent[p] {
+                self.parent[p] = self.find(self.parent[p]);
             }
-            p
+            self.parent[p]
         }
 
         // 查看元素p和元素q是否所属一个集合
