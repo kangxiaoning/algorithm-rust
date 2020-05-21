@@ -1,3 +1,4 @@
+mod leetcode;
 mod map;
 mod sorting;
 mod tree;
