@@ -1,3 +1,4 @@
+use rand::{self, Rng};
 // 稠密图 - 邻接矩阵
 pub struct DenseGraph {
     n: usize,
@@ -83,6 +84,32 @@ impl SparseGraph {
         assert!(v < self.n && w < self.n);
 
         self.g[v].contains(&w)
+    }
+
+    pub fn adj(&self, v: usize) -> Vec<usize> {
+        self.g[v].clone()
+    }
+}
+
+pub fn run() {
+    let n = 20;
+    let m = 100;
+
+    let mut rng = rand::thread_rng();
+    let mut g1 = SparseGraph::new(n, false);
+    for _ in 0..m {
+        let a = rng.gen_range(0, n) as usize;
+        let b = rng.gen_range(0, n) as usize;
+        g1.add_edge(a, b);
+    }
+
+    for v in 0..n {
+        print!("{} : ", v);
+        let adj = g1.adj(v);
+        for v in adj.into_iter() {
+            print!("{} ", v);
+        }
+        println!();
     }
 }
 
