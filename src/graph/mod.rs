@@ -41,6 +41,17 @@ impl DenseGraph {
         assert!(v < self.n && w < self.n);
         self.g[v][w]
     }
+
+    pub fn adj(&self, v: usize) -> Vec<usize> {
+        let mut ret = Vec::new();
+
+        for (idx, &is_true) in self.g[v].iter().enumerate() {
+            if is_true {
+                ret.push(idx);
+            }
+        }
+        ret
+    }
 }
 
 // 稀梳图 - 邻接表
@@ -96,6 +107,8 @@ pub fn run() {
     let m = 100;
 
     let mut rng = rand::thread_rng();
+
+    // Sparse Graph
     let mut g1 = SparseGraph::new(n, false);
     for _ in 0..m {
         let a = rng.gen_range(0, n) as usize;
@@ -103,9 +116,30 @@ pub fn run() {
         g1.add_edge(a, b);
     }
 
+    // O(E)
     for v in 0..n {
         print!("{} : ", v);
         let adj = g1.adj(v);
+        for v in adj.into_iter() {
+            print!("{} ", v);
+        }
+        println!();
+    }
+
+    println!();
+
+    // Dense Graph
+    let mut g2 = DenseGraph::new(n, false);
+    for _ in 0..m {
+        let a = rng.gen_range(0, n) as usize;
+        let b = rng.gen_range(0, n) as usize;
+        g2.add_edge(a, b);
+    }
+
+    // O(V^2)
+    for v in 0..n {
+        print!("{} : ", v);
+        let adj = g2.adj(v);
         for v in adj.into_iter() {
             print!("{} ", v);
         }
