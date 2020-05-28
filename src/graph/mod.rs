@@ -1,4 +1,20 @@
+pub mod readgraph;
+
+// use readgraph;
+
 use rand::{self, Rng};
+use std::path::Path;
+
+pub trait Graph {
+    fn new(n: usize, directed: bool) -> Self;
+    fn v(&self) -> usize;
+    fn e(&self) -> usize;
+    fn add_edge(&mut self, v: usize, w: usize);
+    fn has_edge(&self, v: usize, w: usize) -> bool;
+    fn adj(&self, v: usize) -> Vec<usize>;
+    fn show(&self);
+}
+
 // 稠密图 - 邻接矩阵
 pub struct DenseGraph {
     n: usize,
@@ -7,8 +23,8 @@ pub struct DenseGraph {
     g: Vec<Vec<bool>>,
 }
 
-impl DenseGraph {
-    pub fn new(n: usize, directed: bool) -> Self {
+impl Graph for DenseGraph {
+    fn new(n: usize, directed: bool) -> Self {
         // g初始化为n*n的布尔矩阵, g[i][j]为false, 表示没有任和边
         let g = vec![vec![false; n]; n];
         let m = 0;
@@ -17,16 +33,16 @@ impl DenseGraph {
     }
 
     // 返回节点个数
-    pub fn v(&self) -> usize {
+    fn v(&self) -> usize {
         self.n
     }
 
     // 返回边的个数
-    pub fn e(&self) -> usize {
+    fn e(&self) -> usize {
         self.m
     }
 
-    pub fn add_edge(&mut self, v: usize, w: usize) {
+    fn add_edge(&mut self, v: usize, w: usize) {
         assert!(v < self.n && w < self.n);
 
         self.g[v][w] = true;
@@ -37,12 +53,12 @@ impl DenseGraph {
         self.m += 1;
     }
 
-    pub fn has_edge(&self, v: usize, w: usize) -> bool {
+    fn has_edge(&self, v: usize, w: usize) -> bool {
         assert!(v < self.n && w < self.n);
         self.g[v][w]
     }
 
-    pub fn adj(&self, v: usize) -> Vec<usize> {
+    fn adj(&self, v: usize) -> Vec<usize> {
         let mut ret = Vec::new();
 
         for (idx, &is_true) in self.g[v].iter().enumerate() {
@@ -51,6 +67,10 @@ impl DenseGraph {
             }
         }
         ret
+    }
+
+    fn show(&self) {
+        println!("no implemented");
     }
 }
 
@@ -62,8 +82,8 @@ pub struct SparseGraph {
     g: Vec<Vec<usize>>,
 }
 
-impl SparseGraph {
-    pub fn new(n: usize, directed: bool) -> Self {
+impl Graph for SparseGraph {
+    fn new(n: usize, directed: bool) -> Self {
         let g = vec![vec![]; n];
         let m = 0;
 
@@ -71,16 +91,16 @@ impl SparseGraph {
     }
 
     // 返回节点个数
-    pub fn v(&self) -> usize {
+    fn v(&self) -> usize {
         self.n
     }
 
     // 返回边的个数
-    pub fn e(&self) -> usize {
+    fn e(&self) -> usize {
         self.m
     }
 
-    pub fn add_edge(&mut self, v: usize, w: usize) {
+    fn add_edge(&mut self, v: usize, w: usize) {
         assert!(v < self.n && w < self.n);
 
         self.g[v].push(w);
@@ -91,14 +111,24 @@ impl SparseGraph {
         self.m += 1;
     }
 
-    pub fn has_edge(&self, v: usize, w: usize) -> bool {
+    fn has_edge(&self, v: usize, w: usize) -> bool {
         assert!(v < self.n && w < self.n);
 
         self.g[v].contains(&w)
     }
 
-    pub fn adj(&self, v: usize) -> Vec<usize> {
+    fn adj(&self, v: usize) -> Vec<usize> {
         self.g[v].clone()
+    }
+
+    fn show(&self) {
+        for i in 0..self.n {
+            print!("vertex {}: \t", i);
+            for v in self.adj(i) {
+                print!("{}\t", v);
+            }
+            println!();
+        }
     }
 }
 
@@ -145,6 +175,13 @@ pub fn run() {
         }
         println!();
     }
+
+    // 通过文件读取图
+    let filename = Path::new("./src/files/graph/test1.txt");
+    let mut g1 = SparseGraph::new(13, false);
+    readgraph::read(&mut g1, filename).unwrap();
+    println!("test G1 in Sparse Graph:");
+    g1.show();
 }
 
 #[cfg(test)]
