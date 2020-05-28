@@ -26,7 +26,7 @@ where
 
     assert_eq!(v, graph.v());
 
-    // 读取第一条边的信息
+    // 读取每一条边的信息
     for _ in 0..e {
         let mut line = String::new();
         let _ = reader.read_line(&mut line);
