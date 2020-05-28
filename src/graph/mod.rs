@@ -70,7 +70,13 @@ impl Graph for DenseGraph {
     }
 
     fn show(&self) {
-        println!("no implemented");
+        for i in 0..self.n {
+            print!("vertex {}: \t", i);
+            for v in self.adj(i) {
+                print!("{}\t", v);
+            }
+            println!();
+        }
     }
 }
 
@@ -181,6 +187,11 @@ pub fn run() {
     let mut g1 = SparseGraph::new(13, false);
     readgraph::read(&mut g1, filename).unwrap();
     println!("test G1 in Sparse Graph:");
+    g1.show();
+
+    let mut g2 = DenseGraph::new(13, false);
+    readgraph::read(&mut g2, filename).unwrap();
+    println!("test G1 in Dense Graph:");
     g1.show();
 }
 
