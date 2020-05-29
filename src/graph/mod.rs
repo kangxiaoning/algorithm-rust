@@ -1,3 +1,4 @@
+pub mod components;
 pub mod readgraph;
 
 // use readgraph;
@@ -186,13 +187,49 @@ pub fn run() {
     let filename = Path::new("./src/files/graph/test1.txt");
     let mut g1 = SparseGraph::new(13, false);
     readgraph::read(&mut g1, filename).unwrap();
-    println!("test G1 in Sparse Graph:");
+    println!("test g1 in Sparse Graph:");
     g1.show();
 
     let mut g2 = DenseGraph::new(13, false);
     readgraph::read(&mut g2, filename).unwrap();
-    println!("test G1 in Dense Graph:");
+    println!("test g2 in Dense Graph:");
     g1.show();
+
+    // 连通分量
+    // test1.txt
+    let mut g1 = SparseGraph::new(13, false);
+    readgraph::read(&mut g1, filename).unwrap();
+    let mut component1 = components::Component::new(&g1);
+    println!(
+        "test1.txt, Using Sparse Graph, Component Count: {}",
+        component1.count()
+    );
+
+    let mut g2 = DenseGraph::new(13, false);
+    readgraph::read(&mut g2, filename).unwrap();
+    let mut component2 = components::Component::new(&g2);
+    println!(
+        "test1.txt, Using Dense Graph, Component Count: {}",
+        component2.count()
+    );
+
+    // test2.txt
+    let filename = Path::new("./src/files/graph/test2.txt");
+    let mut g1 = SparseGraph::new(7, false);
+    readgraph::read(&mut g1, filename).unwrap();
+    let mut component1 = components::Component::new(&g1);
+    println!(
+        "test2.txt, Using Sparse Graph, Component Count: {}",
+        component1.count()
+    );
+
+    let mut g2 = DenseGraph::new(7, false);
+    readgraph::read(&mut g2, filename).unwrap();
+    let mut component2 = components::Component::new(&g2);
+    println!(
+        "test2.txt, Using Dense Graph, Component Count: {}",
+        component2.count()
+    );
 }
 
 #[cfg(test)]
