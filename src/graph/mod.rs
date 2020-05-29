@@ -1,4 +1,5 @@
 pub mod components;
+pub mod path;
 pub mod readgraph;
 
 // use readgraph;
@@ -230,6 +231,15 @@ pub fn run() {
         "test2.txt, Using Dense Graph, Component Count: {}",
         component2.count()
     );
+
+    // 测试寻路算法
+    let filename = Path::new("./src/files/graph/test2.txt");
+    let mut g = SparseGraph::new(7, false);
+    readgraph::read(&mut g, filename).unwrap();
+    g.show();
+    let mut path = path::Path::new(&mut g, 0);
+    println!("Path from 0 to 6:");
+    path.show_path(6);
 }
 
 #[cfg(test)]
