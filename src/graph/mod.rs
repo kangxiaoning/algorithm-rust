@@ -5,6 +5,8 @@ pub mod readgraph;
 // use readgraph;
 
 use rand::{self, Rng};
+use std::cmp::{Eq, Ordering, PartialEq, PartialOrd};
+use std::iter::Iterator;
 use std::path::Path;
 
 pub trait Graph {
@@ -137,6 +139,60 @@ impl Graph for SparseGraph {
             }
             println!();
         }
+    }
+}
+
+// 有权图
+struct Edge<T: PartialOrd + PartialEq + Eq> {
+    a: usize,
+    b: usize,
+    weight: T,
+}
+
+impl<T: Clone + Iterator + Ord + PartialOrd + PartialEq + Eq> Ord for Edge<T>
+where
+    <T as std::iter::Iterator>::Item: std::cmp::Ord,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.weight.clone().cmp(other.weight.clone())
+    }
+}
+
+impl<T: Clone + Iterator + Ord + PartialOrd + Eq> PartialOrd for Edge<T>
+where
+    <T as std::iter::Iterator>::Item: std::cmp::Ord,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<T: Eq + PartialOrd> PartialEq for Edge<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.weight == other.weight
+    }
+}
+
+impl<T: Eq + PartialOrd> Eq for Edge<T> {}
+
+impl<T> Edge<T>
+where
+    T: Clone + Ord,
+{
+    pub fn new(a: usize, b: usize, weight: T) -> Self {
+        Self { a, b, weight }
+    }
+
+    pub fn v(&self) -> usize {
+        self.a
+    }
+
+    pub fn w(&self) -> usize {
+        self.b
+    }
+
+    pub fn wt(&self) -> T {
+        self.weight.clone()
     }
 }
 
