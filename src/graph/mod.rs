@@ -264,9 +264,79 @@ where
         let mut ret = Vec::new();
 
         for edge in self.g[v].iter() {
-            // if is_true {
-            //     ret.push(idx);
-            // }
+            match edge {
+                Some(v) => ret.push(v),
+                None => (),
+            }
+        }
+        ret
+    }
+
+    fn show(&self) {
+        for i in 0..self.n {
+            print!("vertex {}: \t", i);
+            for v in self.adj(i) {
+                print!("{}\t", v);
+            }
+            println!();
+        }
+    }
+}
+
+// 有权稀梳图 - 邻接表
+pub struct SparseWeightedGraph<T> {
+    n: usize,
+    m: usize,
+    directed: bool,
+    g: Vec<Vec<Option<Edge<T>>>>,
+}
+
+impl<T> WeightedGraph<T> for SparseWeightedGraph<T>
+where
+    T: Copy + fmt::Display,
+{
+    fn new(n: usize, directed: bool) -> Self {
+        // g初始化为n*n的布尔矩阵, g[i][j]为None, 表示没有任和边
+        let g = vec![vec![None; n]; n];
+        let m = 0;
+        Self { n, m, directed, g }
+    }
+
+    // 返回节点个数
+    fn v(&self) -> usize {
+        self.n
+    }
+
+    // 返回边的个数
+    fn e(&self) -> usize {
+        self.m
+    }
+
+    fn add_edge(&mut self, v: usize, w: usize, weight: T) {
+        assert!(v < self.n && w < self.n);
+        self.g[v].push(Some(Edge::new(v, w, weight)));
+        if v != w && !self.directed {
+            self.g[w].push(Some(Edge::new(w, v, weight)));
+        }
+        self.m += 1
+    }
+
+    fn has_edge(&self, v: usize, w: usize) -> bool {
+        assert!(v < self.n && w < self.n);
+
+        for edge in self.g[v].iter() {
+            if let Some(edge) = edge {
+                if edge.other(v) == w {
+                    return true;
+                }
+            };
+        }
+        return false;
+    }
+
+    fn adj(&self, v: usize) -> Vec<&Edge<T>> {
+        let mut ret = Vec::new();
+        for edge in self.g[v].iter() {
             match edge {
                 Some(v) => ret.push(v),
                 None => (),
@@ -336,6 +406,25 @@ fn weighted_graph_basic() {
     let m = 100;
 
     let mut rng = rand::thread_rng();
+
+    // Sparse Weighted Graph
+    let mut g1 = SparseWeightedGraph::new(n, false);
+    for _ in 0..m {
+        let a = rng.gen_range(0, n);
+        let b = rng.gen_range(0, n);
+        let weighted: f32 = rng.gen();
+        g1.add_edge(a, b, weighted);
+    }
+
+    // O(E)
+    for v in 0..n {
+        print!("{} : ", v);
+        let adj = g1.adj(v);
+        for v in adj.into_iter() {
+            print!("{} ", v);
+        }
+        println!();
+    }
 
     // Dense Weighted Graph
     let mut g2 = DenseWeightedGraph::new(n, false);
@@ -540,6 +629,23 @@ mod tests {
     fn dense_weighted_graph() {
         let n = 5;
         let mut g: DenseWeightedGraph<f32> = DenseWeightedGraph::new(n, false);
+        g.add_edge(0, 1, 1.1);
+        g.add_edge(0, 2, 1.0);
+        g.add_edge(1, 2, 1.2);
+        g.add_edge(1, 3, 1.3);
+        g.add_edge(1, 4, 1.4);
+        g.add_edge(2, 4, 1.4);
+
+        assert_eq!(g.has_edge(0, 1), true);
+        assert_eq!(g.has_edge(0, 3), false);
+        assert_eq!(g.n, 5);
+        assert_eq!(g.m, 6);
+    }
+
+    #[test]
+    fn sparse_weighted_graph() {
+        let n = 5;
+        let mut g: SparseWeightedGraph<f32> = SparseWeightedGraph::new(n, false);
         g.add_edge(0, 1, 1.1);
         g.add_edge(0, 2, 1.0);
         g.add_edge(1, 2, 1.2);
