@@ -155,7 +155,7 @@ where
     T: fmt::Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}-{:.1}-{}", self.a, self.weight, self.b)
+        write!(f, "{}-{:.2}-{}", self.a, self.weight, self.b)
     }
 }
 
@@ -458,7 +458,21 @@ fn read_graph_from_file() {
     let mut g2 = DenseGraph::new(13, false);
     readgraph::read(&mut g2, filename1).unwrap();
     println!("test g2 in Dense Graph:");
+    g2.show();
+}
+
+// 通过文件读取有权图
+fn read_weighted_graph_from_file() {
+    let filename1 = Path::new("./src/files/graph/test3.txt");
+    let mut g1: SparseWeightedGraph<f32> = SparseWeightedGraph::new(8, false);
+    readgraph::read_weighted_graph(&mut g1, filename1).unwrap();
+    println!("test g1 in Sparse Weighted Graph:");
     g1.show();
+
+    let mut g2: DenseWeightedGraph<f32> = DenseWeightedGraph::new(8, false);
+    readgraph::read_weighted_graph(&mut g2, filename1).unwrap();
+    println!("test g2 in Dense Weighted Graph:");
+    g2.show();
 }
 
 // 计算连通分量
@@ -550,8 +564,9 @@ pub fn run() {
     // 测试图结构
     graph_basic();
 
-    // 过文件读取图
+    // 通过文件读取图
     read_graph_from_file();
+    read_weighted_graph_from_file();
 
     // 测试连通分量
     graph_connected_components();
