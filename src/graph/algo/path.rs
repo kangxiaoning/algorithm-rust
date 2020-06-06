@@ -1,5 +1,4 @@
-use super::Graph;
-
+use crate::graph::Graph;
 use std::collections::VecDeque;
 
 pub struct Path<'a, G: Graph> {

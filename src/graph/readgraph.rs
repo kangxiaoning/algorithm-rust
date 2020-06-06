@@ -87,7 +87,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph::{DenseGraph, DenseWeightedGraph, SparseGraph, SparseWeightedGraph};
+    use crate::graph::{DenseGraph, SparseGraph};
+    use crate::graph::{DenseWeightedGraph, SparseWeightedGraph};
 
     #[test]
     fn parse() {

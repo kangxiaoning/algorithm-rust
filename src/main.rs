@@ -14,5 +14,5 @@ fn main() {
     sorting::merge::run();
     map::hashmap::run();
     uf::unionfind::run();
-    graph::run();
+    graph::examples::run();
 }

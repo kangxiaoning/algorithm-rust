@@ -1,4 +1,4 @@
-use super::Graph;
+use crate::graph::Graph;
 
 pub struct Component<'a, G: Graph> {
     graph: &'a G,
