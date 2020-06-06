@@ -76,9 +76,8 @@ impl Graph for DenseGraph {
 
     fn show(&self) {
         for i in 0..self.n {
-            print!("vertex {}: \t", i);
-            for v in self.adj(i) {
-                print!("{}\t", v);
+            for j in 0..self.n {
+                print!("{}\t", self.g[i][j]);
             }
             println!();
         }
