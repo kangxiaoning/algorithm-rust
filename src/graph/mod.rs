@@ -273,9 +273,11 @@ where
 
     fn show(&self) {
         for i in 0..self.n {
-            print!("vertex {}: \t", i);
-            for v in self.adj(i) {
-                print!("{}\t", v);
+            for j in 0..self.n {
+                match &self.g[i][j] {
+                    Some(v) => print!("{}\t", v.weight()),
+                    None => print!("None\t"),
+                }
             }
             println!();
         }
