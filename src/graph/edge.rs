@@ -76,3 +76,43 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn edges_ordering() {
+        // float实现了partial_cmp
+        let e1 = Edge::new(0, 1, 1.1);
+        let e2 = Edge::new(0, 1, 1.1);
+        let e3 = Edge::new(1, 2, 1.2);
+        let e4 = Edge::new(2, 3, 0.3);
+
+        assert_eq!(e1.partial_cmp(&e2).unwrap(), Ordering::Equal);
+        assert_eq!(e1.partial_cmp(&e3).unwrap(), Ordering::Less);
+        assert_eq!(e1.partial_cmp(&e4).unwrap(), Ordering::Greater);
+
+        assert_eq!(e1 == e2, true);
+        assert_eq!(e1 <= e2, true);
+        assert_eq!(e1 < e2, false);
+        assert_eq!(e1 > e4, true);
+        assert_eq!(e1 >= e4, true);
+
+        // i32实现了cmp
+        let e1 = Edge::new(0, 1, 1);
+        let e2 = Edge::new(0, 1, 1);
+        let e3 = Edge::new(1, 2, 2);
+        let e4 = Edge::new(2, 3, -3);
+
+        assert_eq!(e1.cmp(&e2), Ordering::Equal);
+        assert_eq!(e1.cmp(&e3), Ordering::Less);
+        assert_eq!(e1.cmp(&e4), Ordering::Greater);
+
+        assert_eq!(e1 == e2, true);
+        assert_eq!(e1 <= e2, true);
+        assert_eq!(e1 < e2, false);
+        assert_eq!(e1 > e4, true);
+        assert_eq!(e1 >= e4, true);
+    }
+}
