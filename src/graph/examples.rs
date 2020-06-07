@@ -1,5 +1,5 @@
 use super::{
-    components, path, readgraph, DenseGraph, DenseWeightedGraph, Graph, SparseGraph,
+    components, path, prim, readgraph, DenseGraph, DenseWeightedGraph, Graph, SparseGraph,
     SparseWeightedGraph, WeightedGraph,
 };
 use rand::{self, Rng};
@@ -208,6 +208,22 @@ fn unweighted_graph_path_bfs() {
     bfs.show_path(3);
 }
 
+// lazy prim
+fn lazy_prim_mst() {
+    let filename = Path::new("./src/files/graph/test3.txt");
+    let mut g: SparseWeightedGraph<prim::Float> = SparseWeightedGraph::new(8, false);
+    readgraph::read_weighted_graph(&mut g, filename).unwrap();
+
+    let mut mst = prim::LazyPrimMST::new(&g);
+
+    // assert_eq!(mst.result(), Some(prim::Float(2.3499999999999996)));
+    // println!("{:?}", mst.mst_edges());
+    for edge in mst.mst_edges().iter() {
+        println!("{}", edge);
+    }
+    println!("{:?}", mst.result());
+}
+
 pub fn run() {
     // 测试图结构
     graph_basic();
@@ -227,4 +243,7 @@ pub fn run() {
 
     // 测试有权图
     weighted_graph_basic();
+
+    // 测试最小生成树
+    lazy_prim_mst();
 }
