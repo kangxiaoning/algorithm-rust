@@ -26,10 +26,11 @@
 //     Solution::merge(&mut nums1, m, &mut nums2, n);
 //     println!("Ouput: {:?}", nums1);
 // }
-
+#[allow(dead_code)]
 struct Solution {}
 
 impl Solution {
+    #[allow(dead_code)]
     pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
         let mut i: usize = 0;
         let mut j: usize = 0;

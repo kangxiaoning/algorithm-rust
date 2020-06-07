@@ -122,10 +122,9 @@ mod tests {
     #[should_panic(expected = "parse weight failed")]
     fn parse_panic() {
         let line = "8 10 abc".to_string();
-        let (v1, v2, weight): (usize, usize, f32) = parse_weighted_edge(line);
+        let (v1, v2, _): (usize, usize, f32) = parse_weighted_edge(line);
         assert_eq!(v1, 8);
         assert_eq!(v2, 10);
-        // assert_eq!(weight, "abc");
     }
 
     #[test]

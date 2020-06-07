@@ -130,6 +130,7 @@ fn graph_connected_components() {
     let mut g1 = SparseGraph::new(13, false);
     readgraph::read(&mut g1, filename1).unwrap();
     let mut component1 = components::Component::new(&g1);
+    assert_eq!(component1.is_connected(0, 2), true);
     println!(
         "test1.txt, Using Sparse Graph, Component Count: {}",
         component1.count()

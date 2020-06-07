@@ -538,10 +538,10 @@ pub mod union_find_test_helper {
 }
 
 pub fn run() {
-    let n = 1000000;
+    let n = 10000;
 
-    // union_find_test_helper::test_uf1(n);
-    // union_find_test_helper::test_uf2(n);
+    union_find_test_helper::test_uf1(n);
+    union_find_test_helper::test_uf2(n);
     union_find_test_helper::test_uf3(n);
     union_find_test_helper::test_uf4(n);
     union_find_test_helper::test_uf5(n);
