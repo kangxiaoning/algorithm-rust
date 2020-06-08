@@ -17,15 +17,6 @@
 
 // Output: [1,2,2,3,5,6]
 
-// fn main() {
-//     println!("Hello, world!");
-//     let mut nums1 = vec![1, 2, 3, 4, 0, 0, 0];
-//     let mut nums2 = vec![2, 5, 6];
-//     let m = 4;
-//     let n = 3;
-//     Solution::merge(&mut nums1, m, &mut nums2, n);
-//     println!("Ouput: {:?}", nums1);
-// }
 #[allow(dead_code)]
 struct Solution {}
 
