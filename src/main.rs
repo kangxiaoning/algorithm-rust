@@ -1,4 +1,5 @@
 mod graph;
+mod heap;
 mod leetcode;
 mod map;
 mod sorting;
