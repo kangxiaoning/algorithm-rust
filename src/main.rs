@@ -16,4 +16,5 @@ fn main() {
     map::hashmap::run();
     uf::unionfind::run();
     graph::examples::run();
+    heap::heap::run();
 }
