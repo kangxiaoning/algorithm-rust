@@ -8,6 +8,38 @@ pub struct MaxHeap<T> {
     capacity: usize,
 }
 
+// 放在impl外面方便heapify重用
+fn shift_up<T>(vector: &mut Vec<T>, k: usize)
+where
+    T: Ord + Clone,
+{
+    let mut k = k;
+    while k > 1 && vector[k / 2] < vector[k] {
+        vector.swap(k / 2, k);
+        k = k / 2;
+    }
+}
+
+fn shift_down<T>(vector: &mut Vec<T>, k: usize, count: usize)
+where
+    T: Ord + Clone,
+{
+    let mut k = k;
+    while 2 * k <= count {
+        let mut j = 2 * k;
+        if j + 1 <= count && vector[j + 1] > vector[j] {
+            j += 1;
+        }
+
+        if vector[k] >= vector[j] {
+            break;
+        }
+
+        vector.swap(k, j);
+        k = j;
+    }
+}
+
 #[allow(dead_code)]
 impl<T> MaxHeap<T>
 where
@@ -16,6 +48,28 @@ where
     pub fn new(capacity: usize) -> Self {
         let data = vec![None; capacity + 1];
         let count = 0;
+        Self {
+            data,
+            count,
+            capacity,
+        }
+    }
+
+    pub fn with_heapify(vector: &Vec<T>) -> Self {
+        let capacity = vector.len();
+        let mut data = vec![None; capacity + 1];
+        let count = capacity;
+
+        for (i, v) in vector.iter().enumerate() {
+            data.insert(i + 1, Some(v.clone()));
+        }
+
+        let mut i = count / 2;
+        while i >= 1 {
+            shift_down(&mut data, i, count);
+            i -= 1;
+        }
+
         Self {
             data,
             count,
@@ -43,24 +97,8 @@ where
         assert!(self.count + 1 <= self.capacity);
         self.data.insert(self.count + 1, Some(item));
         self.count += 1;
-        self.shift_up(self.count);
-    }
-
-    fn shift_down(&mut self, k: usize) {
-        let mut k = k;
-        while 2 * k <= self.count {
-            let mut j = 2 * k;
-            if j + 1 <= self.count && self.data[j + 1] > self.data[j] {
-                j += 1;
-            }
-
-            if self.data[k] >= self.data[j] {
-                break;
-            }
-
-            self.data.swap(k, j);
-            k = j;
-        }
+        // self.shift_up(self.count);
+        shift_up(&mut self.data, self.count);
     }
 
     pub fn extract_max(&mut self) -> T {
@@ -69,7 +107,8 @@ where
 
         self.data.swap(1, self.count);
         self.count -= 1;
-        self.shift_down(1);
+        // self.shift_down(1);
+        shift_down(&mut self.data, 1, self.count);
 
         ret
     }
@@ -296,6 +335,34 @@ mod tests {
         for _ in 0..100 {
             max_heap.insert(rng.gen_range(0, 100));
         }
+
+        let mut ordered = Vec::new();
+        for i in 0..100 {
+            ordered.push(max_heap.extract_max());
+            println!("{}", ordered[i]);
+        }
+
+        for i in 1..100 {
+            assert!(ordered[i - 1] >= ordered[i]);
+        }
+    }
+
+    #[test]
+    fn heapify() {
+        let mut rng = rand::thread_rng();
+
+        // 构建随机数组
+        let mut vector = Vec::new();
+        for _ in 0..100 {
+            vector.push(rng.gen_range(0, 100));
+        }
+
+        // heapify
+        let mut max_heap = MaxHeap::with_heapify(&vector);
+
+        // for _ in 0..100 {
+        //     max_heap.insert(rng.gen_range(0, 100));
+        // }
 
         let mut ordered = Vec::new();
         for i in 0..100 {
