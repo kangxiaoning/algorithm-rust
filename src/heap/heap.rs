@@ -360,14 +360,10 @@ mod tests {
         // heapify
         let mut max_heap = MaxHeap::with_heapify(&vector);
 
-        // for _ in 0..100 {
-        //     max_heap.insert(rng.gen_range(0, 100));
-        // }
-
         let mut ordered = Vec::new();
         for i in 0..100 {
             ordered.push(max_heap.extract_max());
-            println!("{}", ordered[i]);
+            print!("{} ", ordered[i]);
         }
 
         for i in 1..100 {
