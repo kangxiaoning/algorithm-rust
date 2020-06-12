@@ -45,6 +45,39 @@ where
         self.count += 1;
         self.shift_up(self.count);
     }
+
+    fn shift_down(&mut self, k: usize) {
+        let mut k = k;
+        while 2 * k <= self.count {
+            let mut j = 2 * k;
+            if j + 1 <= self.count && self.data[j + 1] > self.data[j] {
+                j += 1;
+            }
+
+            if self.data[k] >= self.data[j] {
+                break;
+            }
+
+            self.data.swap(k, j);
+            k = j;
+        }
+    }
+
+    pub fn extract_max(&mut self) -> T {
+        assert!(self.count > 0);
+        let ret = self.data[1].clone().unwrap();
+
+        self.data.swap(1, self.count);
+        self.count -= 1;
+        self.shift_down(1);
+
+        ret
+    }
+
+    pub fn get_max(&self) -> T {
+        assert!(self.count > 0);
+        return self.data[1].clone().unwrap();
+    }
 }
 
 // 只能处理整数
@@ -183,6 +216,25 @@ fn put_branch_in_line(line: &mut Vec<u8>, index_cur_level: usize, cur_tree_width
     line[offset_right + 0] = 92;
 }
 
+fn make_sure_ordered() {
+    let mut rng = rand::thread_rng();
+    let mut max_heap = MaxHeap::new(100);
+
+    for _ in 0..100 {
+        max_heap.insert(rng.gen_range(0, 100));
+    }
+
+    let mut ordered = Vec::new();
+    for i in 0..100 {
+        ordered.push(max_heap.extract_max());
+        print!("{} ", ordered[i]);
+    }
+    println!();
+
+    for i in 1..100 {
+        assert!(ordered[i - 1] >= ordered[i]);
+    }
+}
 pub fn run() {
     let mut max_heap = MaxHeap::new(100);
     let mut rng = rand::thread_rng();
@@ -192,6 +244,9 @@ pub fn run() {
     }
 
     print_usize_heap(max_heap);
+
+    // 测试顺序
+    make_sure_ordered();
 }
 
 #[cfg(test)]
@@ -231,5 +286,25 @@ mod tests {
         // (n + 48) as char
         let bytes: Vec<u8> = vec![49, 32, 49, 49];
         assert_eq!(String::from_utf8(bytes).unwrap(), "1 11");
+    }
+
+    #[test]
+    fn max_heap() {
+        let mut rng = rand::thread_rng();
+        let mut max_heap = MaxHeap::new(100);
+
+        for _ in 0..100 {
+            max_heap.insert(rng.gen_range(0, 100));
+        }
+
+        let mut ordered = Vec::new();
+        for i in 0..100 {
+            ordered.push(max_heap.extract_max());
+            println!("{}", ordered[i]);
+        }
+
+        for i in 1..100 {
+            assert!(ordered[i - 1] >= ordered[i]);
+        }
     }
 }
