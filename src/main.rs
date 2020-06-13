@@ -13,6 +13,7 @@ fn main() {
     sorting::bubble::run();
     tree::bst::run();
     sorting::merge::run();
+    sorting::heap::run();
     map::hashmap::run();
     uf::unionfind::run();
     graph::examples::run();
