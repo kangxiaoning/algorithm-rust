@@ -124,7 +124,7 @@ pub fn print_usize_heap(heap: MaxHeap<usize>) {
     }
 
     println!("The max heap size is: {}", heap.size());
-    print!("Data in the max heap: ");
+    println!("Data in the max heap: ");
     for v in heap.data.iter() {
         match v {
             Some(value) => {
@@ -251,30 +251,34 @@ fn put_branch_in_line(line: &mut Vec<u8>, index_cur_level: usize, cur_tree_width
 }
 
 fn make_sure_ordered() {
+    let capacity = 100;
+    let mut max_heap = MaxHeap::with_capacity(capacity);
     let mut rng = rand::thread_rng();
-    let mut max_heap = MaxHeap::new(100);
 
-    for _ in 0..100 {
-        max_heap.insert(rng.gen_range(0, 100));
+    for _ in 0..capacity {
+        max_heap.insert(rng.gen_range(0, capacity));
     }
 
     let mut ordered = Vec::new();
-    for i in 0..100 {
-        ordered.push(max_heap.extract_max());
-        print!("{} ", ordered[i]);
+    while let Some(v) = max_heap.extract_max() {
+        ordered.push(v);
+        print!("{} ", v);
     }
     println!();
 
-    for i in 1..100 {
+    for i in 1..ordered.len() {
         assert!(ordered[i - 1] >= ordered[i]);
     }
 }
+
 pub fn run() {
-    let mut max_heap = MaxHeap::new(100);
+    // print heap
+    let capacity = 10;
+    let mut max_heap = MaxHeap::with_capacity(capacity);
     let mut rng = rand::thread_rng();
 
-    for _ in 0..50 {
-        max_heap.insert(rng.gen_range(0, 100));
+    for _ in 0..capacity {
+        max_heap.insert(rng.gen_range(0, capacity));
     }
 
     print_usize_heap(max_heap);
@@ -289,7 +293,8 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let mut max_heap: MaxHeap<usize> = MaxHeap::new(100);
+        let capacity = 100;
+        let mut max_heap: MaxHeap<usize> = MaxHeap::with_capacity(capacity);
         max_heap.insert(1);
         max_heap.insert(2);
         max_heap.insert(3);
@@ -324,44 +329,51 @@ mod tests {
 
     #[test]
     fn max_heap() {
+        let capacity = 100;
         let mut rng = rand::thread_rng();
-        let mut max_heap = MaxHeap::new(100);
+        let mut max_heap = MaxHeap::with_capacity(capacity);
 
         for _ in 0..100 {
-            max_heap.insert(rng.gen_range(0, 100));
+            max_heap.insert(rng.gen_range(0, capacity));
         }
 
         let mut ordered = Vec::new();
-        for i in 0..100 {
-            ordered.push(max_heap.extract_max());
-            println!("{}", ordered[i]);
+        while let Some(v) = max_heap.extract_max() {
+            ordered.push(v);
+            println!("{}", v);
         }
 
-        for i in 1..100 {
+        for i in 1..capacity {
             assert!(ordered[i - 1] >= ordered[i]);
         }
     }
 
     #[test]
     fn heapify() {
+        let capacity = 100;
         let mut rng = rand::thread_rng();
 
         // 构建随机数组
         let mut vector = Vec::new();
-        for _ in 0..100 {
-            vector.push(rng.gen_range(0, 100));
+        for _ in 0..capacity {
+            vector.push(rng.gen_range(0, capacity));
         }
 
         // heapify
         let mut max_heap = MaxHeap::with_heapify(&vector);
 
         let mut ordered = Vec::new();
-        for i in 0..100 {
-            ordered.push(max_heap.extract_max());
-            print!("{} ", ordered[i]);
+        // for i in 0..100 {
+        //     ordered.push(max_heap.extract_max());
+        //     print!("{} ", ordered[i].unwrap());
+        // }
+
+        while let Some(v) = max_heap.extract_max() {
+            ordered.push(v);
+            println!("{}", v);
         }
 
-        for i in 1..100 {
+        for i in 1..capacity {
             assert!(ordered[i - 1] >= ordered[i]);
         }
     }
