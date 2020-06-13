@@ -45,7 +45,7 @@ impl<T> MaxHeap<T>
 where
     T: Ord + Clone,
 {
-    pub fn new(capacity: usize) -> Self {
+    pub fn with_capacity(capacity: usize) -> Self {
         let data = vec![None; capacity + 1];
         let count = 0;
         Self {
