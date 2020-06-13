@@ -85,37 +85,32 @@ where
         self.count == 0
     }
 
-    fn shift_up(&mut self, k: usize) {
-        let mut k = k;
-        while k > 1 && self.data[k / 2] < self.data[k] {
-            self.data.swap(k / 2, k);
-            k = k / 2;
-        }
-    }
-
     pub fn insert(&mut self, item: T) {
         assert!(self.count + 1 <= self.capacity);
         self.data.insert(self.count + 1, Some(item));
         self.count += 1;
-        // self.shift_up(self.count);
         shift_up(&mut self.data, self.count);
     }
 
-    pub fn extract_max(&mut self) -> T {
-        assert!(self.count > 0);
-        let ret = self.data[1].clone().unwrap();
+    pub fn extract_max(&mut self) -> Option<T> {
+        if self.count == 0 {
+            return None;
+        }
+
+        let ret = self.data[1].clone();
 
         self.data.swap(1, self.count);
         self.count -= 1;
-        // self.shift_down(1);
         shift_down(&mut self.data, 1, self.count);
 
         ret
     }
 
-    pub fn get_max(&self) -> T {
-        assert!(self.count > 0);
-        return self.data[1].clone().unwrap();
+    pub fn get_max(&self) -> Option<T> {
+        if self.count == 0 {
+            return None;
+        }
+        return self.data[1].clone();
     }
 }
 
