@@ -299,6 +299,17 @@ mod tests {
         max_heap.insert(2);
         max_heap.insert(3);
         assert_eq!(max_heap.size(), 3);
+
+        let capacity = 10;
+        let mut max_heap = MaxHeap::with_capacity(capacity);
+        max_heap.insert('a');
+        max_heap.insert('b');
+        max_heap.insert('c');
+        max_heap.insert('E');
+        assert_eq!(max_heap.size(), 4);
+        assert_eq!(max_heap.get_max().unwrap(), 'c');
+        assert_eq!(max_heap.extract_max().unwrap(), 'c');
+        assert_eq!(max_heap.size(), 3);
     }
 
     #[test]
