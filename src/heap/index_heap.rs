@@ -68,7 +68,7 @@ where
             }
 
             // 如果 k 节点的数据大于等于任何子节点的数据，不需要处理
-            if self.data[k] >= self.data[j] {
+            if self.data[self.indexes[k]] >= self.data[self.indexes[j]] {
                 break;
             }
 
