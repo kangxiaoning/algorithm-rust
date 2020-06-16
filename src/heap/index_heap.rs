@@ -3,9 +3,9 @@ pub struct IndexMaxHeap<T> {
     data: Vec<Option<T>>,
     count: usize,
     capacity: usize,
-    indexes: Vec<usize>,
+    indexes: Vec<Option<usize>>,
     // 反向索引，if indexes[i] == j then reverse[j] == i
-    reverse: Vec<usize>,
+    reverse: Vec<Option<usize>>,
 }
 
 #[allow(dead_code)]
@@ -16,8 +16,8 @@ where
     pub fn with_capacity(capacity: usize) -> Self {
         let data = vec![None; capacity + 1];
         let count = 0;
-        let indexes = vec![0; capacity + 1];
-        let reverse = vec![0; capacity + 1];
+        let indexes = vec![None; capacity + 1];
+        let reverse = vec![None; capacity + 1];
         Self {
             data,
             count,
@@ -40,12 +40,15 @@ where
     // shift_up根据对比操作indexes
     fn shift_up(&mut self, k: usize) {
         let mut k = k;
-        while k > 1 && self.data[self.indexes[k / 2]] < self.data[self.indexes[k]] {
-            self.indexes.swap(k / 2, k);
-            self.reverse[self.indexes[k / 2]] = k / 2;
-            self.reverse[self.indexes[k]] = k;
-            k /= 2;
-        }
+        if let Some(parent) = self.indexes[k / 2] {
+            let child = self.indexes[k].unwrap();
+            while k > 1 && self.data[parent] < self.data[child] {
+                self.indexes.swap(k / 2, k);
+                self.reverse[parent] = Some(k / 2);
+                self.reverse[child] = Some(k);
+                k /= 2;
+            }
+        };
     }
 
     pub fn insert(&mut self, index: usize, item: T) {
@@ -59,8 +62,8 @@ where
             i += 1;
             self.data[i] = Some(item);
             self.count += 1;
-            self.indexes[self.count] = i;
-            self.reverse[i] = self.count;
+            self.indexes[self.count] = Some(i);
+            self.reverse[i] = Some(self.count);
 
             self.shift_up(self.count);
         }
@@ -73,19 +76,21 @@ where
             let mut j = 2 * k;
             // 如果存在右节点，并且右节点大于左节点，j 取右节点的索引
             // 比较data中的值，操作indexes中的值
-            if j + 1 <= self.count && self.data[self.indexes[j + 1]] > self.data[self.indexes[j]] {
+            if j + 1 <= self.count
+                && self.data[self.indexes[j + 1].unwrap()] > self.data[self.indexes[j].unwrap()]
+            {
                 j += 1;
             }
 
             // 如果 k 节点的数据大于等于任何子节点的数据，不需要处理
-            if self.data[self.indexes[k]] >= self.data[self.indexes[j]] {
+            if self.data[self.indexes[k].unwrap()] >= self.data[self.indexes[j].unwrap()] {
                 break;
             }
 
             // 交换indexes中的索引
             self.indexes.swap(k, j);
-            self.reverse[self.indexes[k]] = k;
-            self.reverse[self.indexes[j]] = j;
+            self.reverse[self.indexes[k].unwrap()] = Some(k);
+            self.reverse[self.indexes[j].unwrap()] = Some(j);
             k = j;
         }
     }
@@ -96,7 +101,7 @@ where
             return None;
         }
 
-        self.data[self.indexes[1]].clone()
+        self.data[self.indexes[1].unwrap()].clone()
     }
 
     // pop 最大索引堆中堆顶元素
@@ -105,15 +110,15 @@ where
             return None;
         }
 
-        let ret = self.data[self.indexes[1]].clone();
+        let ret = self.data[self.indexes[1].unwrap()].clone();
         self.indexes.swap(1, self.count);
         // 删除最后一个元素，reverse中指向0，表示不存在
-        self.reverse[self.indexes[self.count]] = 0;
+        self.reverse[self.indexes[self.count].unwrap()] = None;
         self.count -= 1;
 
         // heap还有元素，才进行reverse和heap维护
         if self.count > 0 {
-            self.reverse[self.indexes[1]] = 1;
+            self.reverse[self.indexes[1].unwrap()] = Some(1);
             self.shift_down(1);
         }
 
@@ -126,15 +131,15 @@ where
             return None;
         }
 
-        let ret = Some(self.indexes[1] - 1);
+        let ret = Some(self.indexes[1].unwrap() - 1);
         self.indexes.swap(1, self.count);
         // 删除最后一个元素，reverse中指向0，表示不存在
-        self.reverse[self.indexes[self.count]] = 0;
+        self.reverse[self.indexes[self.count].unwrap()] = None;
         self.count -= 1;
 
         // heap还有元素，才进行reverse和heap维护
         if self.count > 0 {
-            self.reverse[self.indexes[1]] = 1;
+            self.reverse[self.indexes[1].unwrap()] = Some(1);
             self.shift_down(1);
         }
 
@@ -147,13 +152,13 @@ where
             return None;
         }
 
-        Some(self.indexes[1] - 1)
+        Some(self.indexes[1].unwrap() - 1)
     }
 
     // 看索引i所在的位置是否存在元素
     fn contain(&self, i: usize) -> bool {
         if i + 1 >= 1 && i + 1 <= self.capacity {
-            return self.reverse[i + 1] != 0;
+            return self.reverse[i + 1] != None;
         }
         false
     }
@@ -193,8 +198,8 @@ where
 
             // reverse优化
             // O(logn)
-            self.shift_up(self.reverse[i]);
-            self.shift_down(self.reverse[i]);
+            self.shift_up(self.reverse[i].unwrap());
+            self.shift_down(self.reverse[i].unwrap());
         }
     }
 }
