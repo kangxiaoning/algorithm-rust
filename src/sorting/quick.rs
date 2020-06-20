@@ -250,6 +250,21 @@ pub fn run() {
     util::test_sort("heap sort_v3", super::heap::sort_v3, &mut arr4);
     util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
     util::test_sort("quick sort_v2", super::quick::sort_v2, &mut arr6);
+
+    println!("Test for many duplication element array.");
+    let n = 100000;
+    let mut arr1 = util::generate_random_array(n, 0, 10);
+    let mut arr2 = arr1.clone();
+    let mut arr3 = arr1.clone();
+    let mut arr4 = arr1.clone();
+    let mut arr5 = arr1.clone();
+    let mut arr6 = arr1.clone();
+    util::test_sort("merge sort_v1", super::merge::sort_v1, &mut arr1);
+    util::test_sort("heap sort_v1", super::heap::sort_v1, &mut arr2);
+    util::test_sort("heap sort_v2", super::heap::sort_v2, &mut arr3);
+    util::test_sort("heap sort_v3", super::heap::sort_v3, &mut arr4);
+    util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
+    util::test_sort("quick sort_v2", super::quick::sort_v2, &mut arr6);
 }
 
 #[cfg(test)]
