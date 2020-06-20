@@ -18,17 +18,17 @@ pub fn sort_v1<T: Ord>(arr: &mut [T]) {
 }
 
 // 优化点：swap 操作转为赋值操作
-pub fn sort_v2<T: Ord + Copy>(arr: &mut [T]) {
+pub fn sort_v2<T: Ord + Clone>(arr: &mut [T]) {
     let len = arr.len();
 
     for i in 1..len {
-        let e = arr[i];
+        let e = arr[i].clone();
         // 在 arr[1..i] 之间寻找合适的插入位置
         let mut left: usize = i;
         for j in (1..i + 1).rev() {
             // 如果当前元素比前面的元素小刚交换位置
             if e < arr[j - 1] {
-                arr[j] = arr[j - 1];
+                arr[j] = arr[j - 1].clone();
                 left -= 1;
             } else {
                 break;
@@ -38,15 +38,15 @@ pub fn sort_v2<T: Ord + Copy>(arr: &mut [T]) {
     }
 }
 
-pub fn sort_v3<T: Ord + Copy>(arr: &mut [T], start: usize, end: usize) {
+pub fn sort_v3<T: Ord + Clone>(arr: &mut [T], start: usize, end: usize) {
     for i in (start + 1)..(end + 1) {
-        let e = arr[i];
+        let e = arr[i].clone();
         // 在 arr[start+1..i] 之间寻找合适的插入位置
         let mut left: usize = i;
         for j in ((start + 1)..(i + 1)).rev() {
             // 如果当前元素比前面的元素小刚交换位置
             if e < arr[j - 1] {
-                arr[j] = arr[j - 1];
+                arr[j] = arr[j - 1].clone();
                 left -= 1;
             } else {
                 break;

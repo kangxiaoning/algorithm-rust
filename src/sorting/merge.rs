@@ -2,7 +2,7 @@ use crate::sorting::insertion;
 use crate::sorting::selection;
 use crate::util;
 
-pub fn sort_v1<T: Ord + Copy>(arr: &mut [T]) {
+pub fn sort_v1<T: Ord + Clone>(arr: &mut [T]) {
     let len = arr.len();
     if len == 0 {
         return;
@@ -10,7 +10,7 @@ pub fn sort_v1<T: Ord + Copy>(arr: &mut [T]) {
     merge_sort(arr, 0, len - 1);
 }
 
-fn merge_sort<T: Ord + Copy>(arr: &mut [T], start: usize, end: usize) {
+fn merge_sort<T: Ord + Clone>(arr: &mut [T], start: usize, end: usize) {
     // 小规模数据，使用 insertion sort
     if end - start <= 15 {
         insertion::sort_v3(arr, start, end);
@@ -27,11 +27,11 @@ fn merge_sort<T: Ord + Copy>(arr: &mut [T], start: usize, end: usize) {
     merge(arr, start, mid, end)
 }
 
-fn merge<T: Ord + Copy>(arr: &mut [T], start: usize, mid: usize, end: usize) {
+fn merge<T: Ord + Clone>(arr: &mut [T], start: usize, mid: usize, end: usize) {
     // 分配辅助数组
     let mut aux = Vec::with_capacity(end - start + 1);
     for i in start..=end {
-        aux.push(arr[i]);
+        aux.push(arr[i].clone());
     }
 
     let mut i = start;
@@ -39,22 +39,22 @@ fn merge<T: Ord + Copy>(arr: &mut [T], start: usize, mid: usize, end: usize) {
     for k in start..=end {
         // 如果左半部分处理完成
         if i > mid {
-            arr[k] = aux[j - start];
+            arr[k] = aux[j - start].clone();
             j += 1;
         }
         // 如果右半部分处理完成
         else if j > end {
-            arr[k] = aux[i - start];
+            arr[k] = aux[i - start].clone();
             i += 1;
         }
         // 左半部分当前元素 < 右半部分当前元素
         else if aux[i - start] < aux[j - start] {
-            arr[k] = aux[i - start];
+            arr[k] = aux[i - start].clone();
             i += 1;
         }
         // 左半部分当前元素 > 右半部分当前元素
         else {
-            arr[k] = aux[j - start];
+            arr[k] = aux[j - start].clone();
             j += 1;
         }
     }
