@@ -89,6 +89,66 @@ pub fn sort_v2<T: Ord + Clone>(arr: &mut [T]) {
     }
 }
 
+// 优化三：二路排序，均分重复元素
+fn partition_v3<T: Ord + Clone>(arr: &mut [T], low: usize, high: usize) -> usize {
+    // pick a random element as pivot
+    let mut rng = rand::thread_rng();
+    arr.swap(low, rng.gen_range(low, high));
+    let e = arr[low].clone();
+
+    // arr(j:high] >= v
+    let mut j = high;
+    // arr[j+1:i) <= v
+    let mut i = low + 1;
+
+    loop {
+        // 不能是 arr[i] <= e，否则会导致重复元素分布不均
+        while i <= high && arr[i] < e {
+            i += 1;
+        }
+
+        // 不能是 arr[j] >= e，否则会导致重复元素分布不均
+        while j >= low + 1 && arr[j] > e {
+            j -= 1;
+        }
+
+        if i >= j {
+            break;
+        }
+
+        arr.swap(i, j);
+        i += 1;
+        j -= 1;
+    }
+
+    arr.swap(low, j);
+    j
+}
+
+fn quick_sort_v3<T: Ord + Clone>(arr: &mut [T], low: usize, high: usize) {
+    if low >= high {
+        return;
+    }
+
+    if high - low <= 15 {
+        super::insertion::sort_v3(arr, low, high);
+        return;
+    }
+
+    let p = partition_v3(arr, low, high);
+    if p > 0 {
+        quick_sort_v3(arr, low, p - 1);
+    }
+    quick_sort_v3(arr, p + 1, high);
+}
+
+pub fn sort_v3<T: Ord + Clone>(arr: &mut [T]) {
+    if arr.len() > 0 {
+        let high = arr.len() - 1;
+        quick_sort_v3(arr, 0, high)
+    }
+}
+
 pub fn run() {
     println!("Test for random array in 1-n .");
 
@@ -237,34 +297,41 @@ pub fn run() {
         "Test for nearly ordered array, swap_times = {} .",
         swap_times
     );
-    let n = 100000;
+    let n = 1000000;
     let mut arr1 = util::generate_nearly_ordered_array(n, swap_times);
-    let mut arr2 = arr1.clone();
-    let mut arr3 = arr1.clone();
+    // let mut arr2 = arr1.clone();
+    // let mut arr3 = arr1.clone();
     let mut arr4 = arr1.clone();
-    let mut arr5 = arr1.clone();
+    // let mut arr5 = arr1.clone();
     let mut arr6 = arr1.clone();
+    let mut arr7 = arr1.clone();
     util::test_sort("merge sort_v1", super::merge::sort_v1, &mut arr1);
-    util::test_sort("heap sort_v1", super::heap::sort_v1, &mut arr2);
-    util::test_sort("heap sort_v2", super::heap::sort_v2, &mut arr3);
+    // util::test_sort("heap sort_v1", super::heap::sort_v1, &mut arr2);
+    // util::test_sort("heap sort_v2", super::heap::sort_v2, &mut arr3);
     util::test_sort("heap sort_v3", super::heap::sort_v3, &mut arr4);
-    util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
+    // util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
     util::test_sort("quick sort_v2", super::quick::sort_v2, &mut arr6);
+    util::test_sort("quick sort_v3", super::quick::sort_v3, &mut arr7);
 
     println!("Test for many duplication element array.");
-    let n = 100000;
+    let n = 1000000;
     let mut arr1 = util::generate_random_array(n, 0, 10);
-    let mut arr2 = arr1.clone();
-    let mut arr3 = arr1.clone();
+    // let mut arr2 = arr1.clone();
+    // let mut arr3 = arr1.clone();
     let mut arr4 = arr1.clone();
-    let mut arr5 = arr1.clone();
-    let mut arr6 = arr1.clone();
+    // let mut arr5 = arr1.clone();
+    // let mut arr6 = arr1.clone();
+    let mut arr7 = arr1.clone();
     util::test_sort("merge sort_v1", super::merge::sort_v1, &mut arr1);
-    util::test_sort("heap sort_v1", super::heap::sort_v1, &mut arr2);
-    util::test_sort("heap sort_v2", super::heap::sort_v2, &mut arr3);
+    // util::test_sort("heap sort_v1", super::heap::sort_v1, &mut arr2);
+    // util::test_sort("heap sort_v2", super::heap::sort_v2, &mut arr3);
     util::test_sort("heap sort_v3", super::heap::sort_v3, &mut arr4);
-    util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
-    util::test_sort("quick sort_v2", super::quick::sort_v2, &mut arr6);
+    // util::test_sort("quick sort_v1", super::quick::sort_v1, &mut arr5);
+
+    // sort_v2 跑不出来结果，报错如下，因此注释掉
+    // thread 'main' has overflowed its stack
+    // util::test_sort("quick sort_v2", super::quick::sort_v2, &mut arr6);
+    util::test_sort("quick sort_v3", super::quick::sort_v3, &mut arr7);
 }
 
 #[cfg(test)]
@@ -280,6 +347,10 @@ mod tests {
         let mut res = vec![4, 1, 8, 5, 7];
         sort_v2(&mut res);
         assert_eq!(res, vec![1, 4, 5, 7, 8]);
+
+        let mut res = vec![4, 1, 8, 5, 7];
+        sort_v3(&mut res);
+        assert_eq!(res, vec![1, 4, 5, 7, 8]);
     }
 
     #[test]
@@ -290,6 +361,10 @@ mod tests {
 
         let mut res = vec!['A', 'a', 'h', 'b', 'W'];
         sort_v2(&mut res);
+        assert_eq!(res, vec!['A', 'W', 'a', 'b', 'h']);
+
+        let mut res = vec!['A', 'a', 'h', 'b', 'W'];
+        sort_v3(&mut res);
         assert_eq!(res, vec!['A', 'W', 'a', 'b', 'h']);
     }
 
@@ -302,6 +377,10 @@ mod tests {
         let mut res = Vec::<u8>::new();
         sort_v2(&mut res);
         assert_eq!(res, vec![]);
+
+        let mut res = Vec::<u8>::new();
+        sort_v3(&mut res);
+        assert_eq!(res, vec![]);
     }
 
     #[test]
@@ -311,7 +390,11 @@ mod tests {
         assert_eq!(res, vec!['a', 'b', 'c', 'd']);
 
         let mut res = vec!['a', 'b', 'c', 'd'];
-        sort_v1(&mut res);
+        sort_v2(&mut res);
+        assert_eq!(res, vec!['a', 'b', 'c', 'd']);
+
+        let mut res = vec!['a', 'b', 'c', 'd'];
+        sort_v3(&mut res);
         assert_eq!(res, vec!['a', 'b', 'c', 'd']);
     }
 }
