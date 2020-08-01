@@ -195,7 +195,7 @@ where
             new_buckets[bucket].push((key, value));
         }
 
-        mem::replace(&mut self.buckets, new_buckets);
+        let _ = mem::replace(&mut self.buckets, new_buckets);
     }
 }
 
